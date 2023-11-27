@@ -1,40 +1,23 @@
-import { Request, Response } from 'express';
+import { query, Request, Response } from 'express';
 import { Product } from '../models/Product';
-import { sequelize } from '../instances/mysql';
 import { User } from '../models/User';
+import {Op} from 'sequelize'
+import { read } from 'fs';
 
 export const home = async (req: Request, res: Response)=>{
+    const users = await User.findAll()
+    res.render('pages/home',{users})
+    
+};
 
-    try { 
-        await sequelize.authenticate()
-        console.log('All good, bro.')
-    } catch(error){
-        console.log('Deu problema :/ Erro: ', error)
-    }
+export const newUser = async (req: Request, res: Response)=>{
+    let userName = req.body.name
+    let userAge = req.body.age
 
-    let users = await User.findAll()
-    console.log(JSON.stringify(users))
-
-    res.render('pages/home', {
-        users
+    await User.create({
+        name: userName,
+        age: userAge
     })
 
-    //let age: number = 90;
-    //let showOld: boolean = false;
-
-    //if(age > 50) {
-    //    showOld = true;
-    //}
-    //
-    //let list = Product.getAll();
-    //let expensiveList = Product.getFromPriceAfter(12);
-    //
-    //res.render('pages/home', {
-    //    name: 'Viviane',
-    //    lastName: 'de Lima',
-    //    showOld,
-    //    products: list,
-    //    expensives: expensiveList,
-    //    frasesDoDia: []
-    //});
-}
+    res.redirect('/')
+};
